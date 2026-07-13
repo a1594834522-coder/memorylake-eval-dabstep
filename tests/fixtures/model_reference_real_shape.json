@@ -1,0 +1,27 @@
+{
+  "ambiguous": ["r-low-confidence", "r-ambiguous-high-confidence"],
+  "candidates": {
+    "r-ambiguous-high-confidence": {
+      "first_match": {"answer": "7.00", "votes": 23},
+      "sum_all_matching": {"answer": "10.00", "votes": 132}
+    },
+    "r-applicable-fee-ids": {
+      "sampled_day_tuples": {"answer": "3", "votes": 1},
+      "wildcard_aware": {"answer": "3, 4", "votes": 9}
+    },
+    "r-total-fees": [
+      {"answer": "10.00", "name": "sum_all_matching", "votes": 8},
+      {"answer": "7.00", "name": "first_match", "votes": 2}
+    ],
+    "r-low-confidence": {
+      "first_match": {"answer": "7.00", "votes": 4},
+      "sum_all_matching": {"answer": "10.00", "votes": 6}
+    }
+  },
+  "primary": {
+    "r-ambiguous-high-confidence": "10.00",
+    "r-applicable-fee-ids": "3, 4",
+    "r-low-confidence": "10.00",
+    "r-total-fees": "10.00"
+  }
+}
