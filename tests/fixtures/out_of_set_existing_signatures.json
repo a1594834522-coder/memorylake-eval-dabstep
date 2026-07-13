@@ -1,0 +1,6 @@
+{
+  "tasks": [
+    {"route_id": "average_scheme_fee", "signature": "amount=7.3|month=2026-02"},
+    {"route_id": "total_fees", "signature": "amount=333|month=2026-03"}
+  ]
+}

@@ -1,0 +1,177 @@
+{
+  "official_safe": true,
+  "route_card_count": 5,
+  "cards": [
+    {
+      "route_id": "fee_matching",
+      "title": "Fee matching and applicability",
+      "analysis_layer": "fee_matching",
+      "triggers": [
+        "fee id",
+        "applicable fee",
+        "fees.json",
+        "wildcard matching"
+      ],
+      "instructions": [
+        "Use the public fees.json schema exactly. Empty list fields mean the fee rule applies to all values for that dimension.",
+        "Compute fee_eur as fixed_amount plus rate times eur_amount divided by 10000. The rate field is in basis points.",
+        "Resolve merchant profile fields before filtering transaction rows. Merchant-level account type, MCC, capture delay, and acquirer fields are not payment-level fields.",
+        "When a question asks for applicable fee IDs, return the matching fee IDs as integers in ascending order unless the guidelines specify another order.",
+        "When a question asks which merchants are affected by a fee rule or a fee-rule restriction, compare fee applicability over the same yearly transaction population."
+      ],
+      "helper_functions": [
+        "matching_fee_ids",
+        "match_count_summary",
+        "matches_fee_rule",
+        "applicable_fee_ids_for_merchant_period",
+        "fee_affected_merchants_for_year",
+        "total_fees_for_merchant_period",
+        "calculate_fee_monthly_metrics",
+        "calculate_monthly_metrics"
+      ],
+      "verification_checks": [
+        "Check merchant-level filters before payment-level filters."
+      ],
+      "keywords": [
+        "fee",
+        "fees.json",
+        "matching_fee",
+        "applicable fee",
+        "wildcard"
+      ]
+    },
+    {
+      "route_id": "fee_simulation",
+      "title": "Fee simulation and counterfactual changes",
+      "analysis_layer": "fee_simulation",
+      "triggers": [
+        "changed fee rule",
+        "MCC change",
+        "traffic steering",
+        "fee delta"
+      ],
+      "instructions": [
+        "For counterfactual questions, build one baseline calculation and one modified calculation with the same filters and aggregation semantics.",
+        "For rate-change deltas, fixed_amount cancels when only rate changes. The delta is the rate difference times eur_amount divided by 10000 over the affected transactions.",
+        "For relative-only fee simulations, set the affected fee rule fixed_amount to 0 and keep the rate field unchanged over the same matching transactions.",
+        "For traffic-steering questions, apply the hypothetical scheme or attribute to the evaluated transactions before matching fee rules.",
+        "When a question asks for total fees, sum every matching fee rule per transaction unless the task explicitly asks for a single best or average fee."
+      ],
+      "helper_functions": [
+        "calculate_fee",
+        "match_count_summary",
+        "total_fees_for_merchant_period",
+        "merchant_mcc_fee_delta_for_year",
+        "fee_rate_delta_for_month",
+        "fee_rate_delta_for_period",
+        "fee_fixed_component_delta_for_month",
+        "optimize_aci_for_fraudulent_transactions",
+        "calculate_fee_monthly_metrics",
+        "add_intracountry_flag"
+      ],
+      "verification_checks": [],
+      "keywords": [
+        "simulate",
+        "simulation",
+        "changed",
+        "delta",
+        "steer",
+        "minimum fees",
+        "hypothetical"
+      ]
+    },
+    {
+      "route_id": "fraud_and_customer_semantics",
+      "title": "Fraud, shopper, and customer metrics",
+      "analysis_layer": "customer_fraud_metrics",
+      "triggers": [
+        "fraud rate",
+        "unique email",
+        "repeat customer",
+        "shopper metric"
+      ],
+      "instructions": [
+        "Use the manual and payments-readme definitions before choosing numerator and denominator for fraud or shopper metrics.",
+        "For fraud-rate questions, verify whether the requested rate is by EUR volume, transaction count, or grouped aggregation.",
+        "For unique-email metrics, decide explicitly how missing email addresses should be handled from the task wording.",
+        "For repeat-customer metrics, define the customer key and the transaction window before computing counts or percentages."
+      ],
+      "helper_functions": [
+        "fraud_rate_by_volume",
+        "fraud_rate_by_group",
+        "average_transactions_per_unique_email",
+        "average_transaction_amount_per_unique_email",
+        "repeat_customer_percentage"
+      ],
+      "verification_checks": [],
+      "keywords": [
+        "fraud",
+        "customer",
+        "email",
+        "shopper",
+        "repeat",
+        "unique"
+      ]
+    },
+    {
+      "route_id": "schema_domain_semantics",
+      "title": "Schema domain and manual-defined values",
+      "analysis_layer": "schema_semantics",
+      "triggers": [
+        "possible values",
+        "field domain",
+        "manual-defined category"
+      ],
+      "instructions": [
+        "For field-domain questions, combine values defined in the public manual with values observed in the data when the task asks for possible values.",
+        "Use merchant_category_codes.csv to resolve MCC descriptions to numeric MCC codes before fee filtering.",
+        "For date-window questions, convert calendar dates to the dataset date representation and use inclusive bounds when the task names an inclusive period.",
+        "For duplicate-row questions, use the exact column scope requested by the task before calling duplicated."
+      ],
+      "helper_functions": [
+        "field_domain_values",
+        "mcc_code_for_description",
+        "most_expensive_mccs_for_amount",
+        "fee_factor_monotonicity"
+      ],
+      "verification_checks": [],
+      "keywords": [
+        "manual",
+        "schema",
+        "possible values",
+        "domain",
+        "field_domain_values",
+        "category"
+      ]
+    },
+    {
+      "route_id": "output_contracts",
+      "title": "DABStep answer formatting contracts",
+      "analysis_layer": "output_contract",
+      "triggers": [
+        "comma list",
+        "rounded number",
+        "empty list",
+        "Not Applicable"
+      ],
+      "instructions": [
+        "Return only the requested value in agent_answer. Do not include units, explanations, or extra labels unless the guideline requests them.",
+        "For comma-separated lists, use a comma followed by one space between items.",
+        "For grouped list outputs, follow the bracket, separator, sorting, and rounding instructions in the guideline exactly.",
+        "For numeric answers, round only after the calculation and format to the requested number of decimals."
+      ],
+      "helper_functions": [
+        "format_decimal_places"
+      ],
+      "verification_checks": [],
+      "keywords": [
+        "output",
+        "answer",
+        "format",
+        "comma",
+        "rounded",
+        "decimal"
+      ]
+    }
+  ]
+}

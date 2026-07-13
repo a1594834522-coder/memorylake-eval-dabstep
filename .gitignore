@@ -1,0 +1,38 @@
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+
+# Python caches and package outputs
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.whl
+
+# Downloaded data, learned assets, runs, and model output
+data/
+artifacts/
+results/
+workspace/
+outputs/
+runs/
+*.jsonl
+*.log
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+
+# Internal implementation plans
+docs/plans/

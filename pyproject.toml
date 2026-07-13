@@ -1,0 +1,31 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 64"]
+
+[project]
+name = "dabstep-memorylake-agent-official"
+version = "0.1.0"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "datasets>=2.20",
+  "huggingface_hub>=0.24",
+  "httpx>=0.28",
+  "pandas>=2.2",
+  "pydantic>=2.7",
+  "pydantic-ai>=1.0.0",
+  "pydantic-graph>=1.0.0",
+  "python-dotenv>=1.0",
+]
+
+[project.scripts]
+dabstep-agent = "dabstep_agent_pydantic.cli:main"
+dabstep-learn = "dabstep_agent_pydantic.distill.learn:main"
+dabstep-download-data = "dabstep_agent_pydantic.downloader:main"
+dabstep-export-submission = "dabstep_agent_pydantic.submission:main"
+dabstep-upload-manual = "dabstep_agent_pydantic.manual_documents_cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

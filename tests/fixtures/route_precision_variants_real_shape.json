@@ -1,0 +1,10 @@
+{
+  "routes": {
+    "average_scheme_fee": [
+      {"variant": "What would be the median fee that the card scheme Visa would charge?"}
+    ],
+    "total_fees": [
+      {"variant": "What are the total fees that Example_Co paid in March 2024?"}
+    ]
+  }
+}
