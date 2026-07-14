@@ -63,3 +63,30 @@ def test_contract_preserves_case_sensitive_literal_samples():
     assert validate_output_contract("NO", contract) is None
     feedback = validate_output_contract("Yes", contract)
     assert feedback is not None and "case-sensitive" in feedback
+
+
+def test_scorer_aligned_precision_coarsens_cents_scale_answers():
+    from dabstep_agent_pydantic.output_contract import scorer_aligned_precision
+
+    # cents-scale primitive: two decimals regardless of magnitude
+    assert scorer_aligned_precision("-2.87721200000000", force_cents=True) == "-2.88"
+    assert scorer_aligned_precision("0.05853600000000", force_cents=True) == "0.06"
+    # generic numeric answers: coarsen only at |value| >= 1
+    assert scorer_aligned_precision("9.767557") == "9.77"
+    assert scorer_aligned_precision("-5.24362600000000") == "-5.24"
+    # sub-1 ratio answers keep contract precision (scorer abs-tolerance branch)
+    assert scorer_aligned_precision("0.315937") == "0.315937"
+    assert scorer_aligned_precision("-0.090152") == "-0.090152"
+
+
+def test_scorer_aligned_precision_leaves_non_bare_decimals_alone():
+    from dabstep_agent_pydantic.output_contract import scorer_aligned_precision
+
+    assert scorer_aligned_precision("42") == "42"
+    assert scorer_aligned_precision("12.34") == "12.34"
+    assert scorer_aligned_precision("Not Applicable") == "Not Applicable"
+    assert scorer_aligned_precision("NL") == "NL"
+    assert scorer_aligned_precision("36, 51, 65") == "36, 51, 65"
+    assert scorer_aligned_precision("TransactPlus:2528.31") == "TransactPlus:2528.31"
+    assert scorer_aligned_precision("9.767557%") == "9.767557%"
+    assert scorer_aligned_precision("[POS: 89.34, Ecommerce: 92.70]") == "[POS: 89.34, Ecommerce: 92.70]"

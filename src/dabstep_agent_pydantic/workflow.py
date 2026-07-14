@@ -24,6 +24,8 @@ from dabstep_agent_pydantic.distill.shadow import generated_skills_mode
 from dabstep_agent_pydantic.distill.shadow import try_solve_generated
 from dabstep_agent_pydantic.evaluation_policy import EvaluationPolicy
 from dabstep_agent_pydantic.runtime_util import cached_load_dabstep_data as _cached_load_dabstep_data
+from dabstep_agent_pydantic.output_contract import CENTS_SCALE_PRIMITIVES
+from dabstep_agent_pydantic.output_contract import scorer_aligned_precision
 from dabstep_agent_pydantic.planning import PlanDecision
 from dabstep_agent_pydantic.planning import plan_task
 from dabstep_agent_pydantic.python_tool import PythonWorkspace
@@ -134,6 +136,12 @@ class FinalizeNode(BaseNode[WorkflowState, None, dict[str, object]]):
         ctx.state.stages.append("finalize")
         assert ctx.state.record is not None
         record = dict(ctx.state.record)
+        answer = record.get("agent_answer")
+        if isinstance(answer, str):
+            record["agent_answer"] = scorer_aligned_precision(
+                answer,
+                force_cents=record.get("answer_primitive") in CENTS_SCALE_PRIMITIVES,
+            )
         record["workflow_trace"] = {
             "stages": list(ctx.state.stages),
             "solver_attempts": ctx.state.solver_attempts,
@@ -317,6 +325,7 @@ async def _default_solve(
                 "elapsed_seconds": round(time.time() - start_time, 3),
                 "code_path": str(code_path),
                 "deterministic_route": f"generated:{generated.skill_id}",
+                "answer_primitive": generated.primitive,
             }
 
     agent = create_agent()
