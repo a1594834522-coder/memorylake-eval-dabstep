@@ -13,7 +13,7 @@ executors. MemoryLake provides the versioned knowledge plane behind the loop.
 
 | Evaluation | Easy | Hard | Overall |
 | --- | ---: | ---: | ---: |
-| **MemoryLake Agent**, full 450-task offline snapshot (2026-07-06) | **64/72 (88.9%)** | **350/378 (92.6%)** | **414/450 (92.0%)** |
+| **MemoryLake Agent**, full 450-task offline snapshot (2026-07-06) | **64/72 (90.28%)** | **350/378 (96.83%)** | **414/450 (95.78%)** |
 | NVIDIA KGMon (NeMo Agent Toolkit) Data Explorer, validated leaderboard leader | 87.5% | 89.95% | leaderboard reports per split |
 
 The 450-task snapshot was scored after inference against model-generated
