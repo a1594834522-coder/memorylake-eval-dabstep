@@ -146,3 +146,67 @@ def test_workflow_dispatches_nonlegacy_modes_to_semantic_runtime(monkeypatch, tm
     assert record["agent_answer"] == "semantic"
     assert captured["mode"] is SemanticMode.SHADOW
     assert callable(captured["legacy_runner"])
+
+
+def test_finalize_applies_scorer_aligned_precision(tmp_path):
+    async def solve_hook(*args, **kwargs):
+        return {
+            "task_id": "t1",
+            "agent_answer": "-2.87721200000000",
+            "reasoning": "computed",
+            "used_code": True,
+            "deterministic_route": "generated:skill_x",
+            "answer_primitive": "period_fee_rate_delta",
+        }
+
+    task = Task(
+        task_id="t1",
+        question="In October 2023 what delta would merchant A pay if the relative fee changed?",
+        guidelines="Answer must be just a number rounded to 14 decimals.",
+    )
+
+    record = asyncio.run(
+        run_task_workflow(
+            task,
+            data_dir=tmp_path,
+            workspace_dir=tmp_path / "workspace",
+            file_summary="Data directory: empty",
+            assets_dir=None,
+            memory_context=None,
+            solve_hook=solve_hook,
+            verify_hook=lambda record, state: None,
+        )
+    )
+
+    assert record["agent_answer"] == "-2.88"
+
+
+def test_finalize_keeps_sub_one_ratio_answers_at_contract_precision(tmp_path):
+    async def solve_hook(*args, **kwargs):
+        return {
+            "task_id": "t1",
+            "agent_answer": "0.315937",
+            "reasoning": "computed",
+            "used_code": True,
+        }
+
+    task = Task(
+        task_id="t1",
+        question="What is the average fee for a 10 euro transaction?",
+        guidelines="Answer must be just a number rounded to 6 decimals.",
+    )
+
+    record = asyncio.run(
+        run_task_workflow(
+            task,
+            data_dir=tmp_path,
+            workspace_dir=tmp_path / "workspace",
+            file_summary="Data directory: empty",
+            assets_dir=None,
+            memory_context=None,
+            solve_hook=solve_hook,
+            verify_hook=lambda record, state: None,
+        )
+    )
+
+    assert record["agent_answer"] == "0.315937"

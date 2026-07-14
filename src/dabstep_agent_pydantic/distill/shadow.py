@@ -81,6 +81,7 @@ def calibration_note_for(question: str) -> str | None:
 class GeneratedAnswer:
     skill_id: str
     agent_answer: str
+    primitive: str | None = None
 
 
 _fingerprint_cache: dict[str, dict[str, str]] = {}
@@ -166,7 +167,12 @@ def try_solve_generated(question: str, guidelines: str, data, data_dir=None) -> 
                        f"[skills] {skill.skill_id} answer rejected ({violation}); "
                        f"falling back to the LLM path")
             return None
-        return GeneratedAnswer(skill_id=skill.skill_id, agent_answer=answer)
+        payments = skill.spec.payments
+        return GeneratedAnswer(
+            skill_id=skill.skill_id,
+            agent_answer=answer,
+            primitive=payments.primitive if payments is not None else None,
+        )
     return None
 
 
